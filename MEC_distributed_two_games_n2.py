@@ -443,7 +443,7 @@ def run(tr):
     #     latency[tr] = sum(total_delay)/total_jobs
     # except:
     #     print(tr)
-    tf.summary.FileWriter("logs/", SESS.graph)
+ 
     tf.reset_default_graph()
     return total_r / q_len, total_drop / total_time, total_q_delay, total_utility, total_s_delay
     # return sum(total_delay)/total_jobs, sum(total_drop)
