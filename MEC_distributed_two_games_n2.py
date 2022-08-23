@@ -5,7 +5,7 @@ import numpy as np
 # import tensorflow as tf
 import tensorflow.compat.v1 as tf
 
-tf.disable_eager_execution()
+tf.disable_eager_execution()  # 禁用默認的即時執行模式(tensorflow 1轉2 需要)
 import gym
 import time
 import random
@@ -50,8 +50,8 @@ class Actor(object):
         self.td_error = tf.placeholder(tf.float32, None, "td_error")  # TD_error
         self.q_size = q_size
 
-        with tf.variable_scope(scope + 'Actor'):
-            l1 = tf.layers.dense(
+        with tf.variable_scope(scope + 'Actor'):  # 命名用e0Actor
+            l1 = tf.layers.dense(  # hidden layer
                 inputs=self.s,
                 units=10,  # number of hidden units #35
                 # activation=tf.nn.relu,
@@ -61,7 +61,7 @@ class Actor(object):
                 name='l1'
             )
 
-            self.acts_prob = tf.layers.dense(
+            self.acts_prob = tf.layers.dense(   # output layer
                 inputs=l1,
                 units=self.n_actions,  # output units
                 activation=tf.nn.softmax,  # get action probabilities
@@ -72,12 +72,12 @@ class Actor(object):
 
         with tf.variable_scope(scope + 'exp_v'):
             # log_prob = tf.log(self.acts_prob[0, self.a])
-            log_prob = tf.log(self.acts_prob)
+            log_prob = tf.log(self.acts_prob)   # 自然對數函數
             self.exp_v = tf.reduce_mean(
                 tf.math.reduce_sum(tf.math.multiply(log_prob, self.td_error)))  # advantage (TD_error) guided loss
 
         with tf.variable_scope(scope + 'train'):
-            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(
+            self.train_op = tf.train.AdamOptimizer(self.lr).minimize(   # Adam optimization algorithm (for stochastic optimization)
                 -self.exp_v * .5)  # -.2  # minimize(-exp_v) = maximize(exp_v) #10.5
             # self.train_op = tf.train.GradientDescentOptimizer(lr).minimize(-self.exp_v*0.00005)
             # self.train_op = tf.train.MomentumOptimizer(learning_rate=lr, momentum=0.9).minimize(-self.exp_v*0.005)
@@ -85,7 +85,7 @@ class Actor(object):
 
     def learn(self, s, a, td):
         s = s[np.newaxis, :]
-        feed_dict = {self.s: s, self.a: a, self.td_error: td}
+        feed_dict = {self.s: s, self.a: a, self.td_error: td}   # dictionary
         _, exp_v = self.sess.run([self.train_op, self.exp_v], feed_dict)
         # self.lr = min(1, self.lr * math.pow(1.000001, self.t))
         self.t += 1
