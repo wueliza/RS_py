@@ -372,7 +372,7 @@ def run(tr):
             print("stop2")
             exit()
 
-        c_0_ = avg_delay_1
+        c_0_ = avg_delay_1  # next state
         c_1_ = avg_delay_0
         s_0_ = np.hstack((s_0_, c_0_))
         s_1_ = np.hstack((s_1_, c_1_))
@@ -464,7 +464,7 @@ if __name__ == "__main__":
         q_delay = []
         utility = []
         s_delay = []
-        for i in range(1, 10):
+        for i in range(1, 10):  # task arrival rate
             print(j, i)
             # i,r =pool.apply_async(func=run, args=(i,))
             # print((i,r))

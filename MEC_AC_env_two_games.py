@@ -410,7 +410,7 @@ class MEC_network:
 
     def step(self, shared_action):
         task_arrival_rate = self.task_arrival_rate
-        new_task = np.random.poisson(task_arrival_rate)
+        new_task = np.random.poisson(task_arrival_rate)     # poisson distribution
 
         # self.p_a += sum(self.p_state)
         q_delay = self.q_state if self.q_state < self.Q_SIZE else self.Q_SIZE
