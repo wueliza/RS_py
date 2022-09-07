@@ -334,10 +334,10 @@ def run(tr):
         total_work_0 = s_0[1]
         total_work_1 = s_1[1]
 
-        c_0 = edge_0.local_predictor.choose_action(shared_ations[1]).flatten()[0]
+        c_0 = edge_0.local_predictor.choose_action(shared_ations[1]).flatten()[0]   # predict the other edge's price
         c_1 = edge_0.local_predictor.choose_action(shared_ations[0]).flatten()[0]
 
-        s_0 = np.hstack((s_0[:len(s_0) - 1], c_0))
+        s_0 = np.hstack((s_0[:len(s_0) - 1], c_0))  # the other edge's price
         s_1 = np.hstack((s_1[:len(s_0) - 1], c_1))
 
         a0_pre = shared_ations[1]
@@ -359,7 +359,7 @@ def run(tr):
         # shared_ations[5] = a5
         # First sharing - states (latency states)
 
-        s_0_, total_work_0, r_0, d_0, q_d_0, new_task_0, avg_delay_0 = mec_0.step(shared_ations)
+        s_0_, total_work_0, r_0, d_0, q_d_0, new_task_0, avg_delay_0 = mec_0.step(shared_ations)    #s_, total_work_, reward, d_delay, q_delay, new_task, avg_delay
         s_1_, total_work_1, r_1, d_1, q_d_1, new_task_1, avg_delay_1 = mec_1.step(shared_ations)
 
         if r_0 < 0 or r_1 < 0:
@@ -382,6 +382,9 @@ def run(tr):
         td_error_0, v_0, _, v_0_ = edge_0.local_critic.learn(s_0, r_0, s_0_)
         td_error_1, v_1, _, v_1_ = edge_1.local_critic.learn(s_1, r_1, s_1_)
 
+        edge_0.local_actor.learn(s_0,shared_ations[0],td_error_0)
+        edge_1.local_actor.learn(s_1, shared_ations[1], td_error_1)
+
         edge_0.local_predictor.learn(a0_pre, avg_delay_1, c_0)
         edge_1.local_predictor.learn(a1_pre, avg_delay_0, c_1)
 
@@ -391,7 +394,7 @@ def run(tr):
         c_1 = c_1_
 
         ###########################
-        edge_0.local_actor.lr = min(1, edge_0.local_actor.lr * math.pow(1.000001, i))
+        edge_0.local_actor.lr = min(1, edge_0.local_actor.lr * math.pow(1.000001, i))   # learning rate
         edge_0.local_critic.lr = min(1, edge_0.local_critic.lr * math.pow(1.000001, i))
 
         edge_1.local_actor.lr = min(1, edge_1.local_actor.lr * math.pow(1.000001, i))
@@ -464,7 +467,7 @@ if __name__ == "__main__":
         q_delay = []
         utility = []
         s_delay = []
-        for i in range(1, 10):  # task arrival rate
+        for i in range(1, 40):  # task arrival rate
             print(j, i)
             # i,r =pool.apply_async(func=run, args=(i,))
             # print((i,r))
@@ -522,7 +525,7 @@ import matplotlib.pyplot as plt
 x = range(1, 40)
 plt.plot(x, la, color='#9D2EC5', marker='o', label='Distributed Actor Critic', linewidth=3.0)
 # plt.plot(x, ac_12n_dis_l ,color= '#F5B14C',marker='o',label='Distributed Actor Critic (group = 1)', linewidth=3.0)
-
+plt.title("add_ActorLearning")
 
 # plt.xticks(range(35,60,5))
 plt.xlabel('Average Task Arrivals per Slot', fontsize=13)

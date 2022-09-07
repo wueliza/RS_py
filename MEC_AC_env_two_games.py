@@ -1,4 +1,3 @@
-
 import numpy as np
 import time
 import collections
@@ -8,22 +7,22 @@ import collections
 
 np.random.seed(int(time.time()))
 COST_TO_CLOUD = 15
-#self.Q_SIZE = 25
+# self.Q_SIZE = 25
 
 
 pT = collections.defaultdict()
-pT[0] = [[0.54287417, 0.45712583], [0, 0, 0],[0, 0, 0], [0.4376822, 0.5623178]]
-pT[1] = [[0.84451706, 0.15548294], [0, 0, 0],[0, 0, 0], [0.70195544, 0.29804456]]
-pT[2] = [[0.33072517, 0.66927483], [0, 0, 0],[0, 0, 0], [0.19587869, 0.80412131]]
-pT[3] = [[0.33072517, 0.66927483], [0, 0, 0],[0, 0, 0], [0.19587869, 0.80412131]]
-pT[4] = [[0.84451706, 0.15548294], [0, 0, 0],[0, 0, 0], [0.70195544, 0.29804456]]
-pT[5] = [[0.33072517, 0.66927483], [0, 0, 0],[0, 0, 0], [0.4376822, 0.5623178]]
-pT[6] = [[ 0.68013973,  0.31986027], [0, 0, 0],[0, 0, 0],[ 0.58572196,  0.41427804]]
-pT[7] = [[ 0.8769391 , 0.1230609], [0, 0, 0],[0, 0, 0],[ 0.484112,  0.515888]]
-pT[8] = [[ 0.7192134,  0.2807866], [0, 0, 0],[0, 0, 0],[ 0.50275623,  0.49724377]]
-pT[9] = [[ 0.70085048,  0.29914952], [0, 0, 0],[0, 0, 0],[ 0.61134567,  0.38865433]]
-pT[10] = [[ 0.86149522,  0.13850478], [0, 0, 0],[0, 0, 0],[ 0.4549394,  0.5450606]]
-pT[11] = [[ 0.11580692,  0.88419308],[0, 0, 0],[0, 0, 0],[ 0.3942863,  0.6057137]]
+pT[0] = [[0.54287417, 0.45712583], [0, 0, 0], [0, 0, 0], [0.4376822, 0.5623178]]
+pT[1] = [[0.84451706, 0.15548294], [0, 0, 0], [0, 0, 0], [0.70195544, 0.29804456]]
+pT[2] = [[0.33072517, 0.66927483], [0, 0, 0], [0, 0, 0], [0.19587869, 0.80412131]]
+pT[3] = [[0.33072517, 0.66927483], [0, 0, 0], [0, 0, 0], [0.19587869, 0.80412131]]
+pT[4] = [[0.84451706, 0.15548294], [0, 0, 0], [0, 0, 0], [0.70195544, 0.29804456]]
+pT[5] = [[0.33072517, 0.66927483], [0, 0, 0], [0, 0, 0], [0.4376822, 0.5623178]]
+pT[6] = [[0.68013973, 0.31986027], [0, 0, 0], [0, 0, 0], [0.58572196, 0.41427804]]
+pT[7] = [[0.8769391, 0.1230609], [0, 0, 0], [0, 0, 0], [0.484112, 0.515888]]
+pT[8] = [[0.7192134, 0.2807866], [0, 0, 0], [0, 0, 0], [0.50275623, 0.49724377]]
+pT[9] = [[0.70085048, 0.29914952], [0, 0, 0], [0, 0, 0], [0.61134567, 0.38865433]]
+pT[10] = [[0.86149522, 0.13850478], [0, 0, 0], [0, 0, 0], [0.4549394, 0.5450606]]
+pT[11] = [[0.11580692, 0.88419308], [0, 0, 0], [0, 0, 0], [0.3942863, 0.6057137]]
 
 # pT[0] = [[0.04055034, 0.92525759, 0.03419207], [0.0447594, 0.45980075, 0.49543985], [0,0,0], [0.29821074,0.59653676, 0.1052525]]
 # pT[1] = [[0.09839428, 0.44264436, 0.45896136], [0.62303035, 0.27488022, 0.10208943],[0,0,0], [0.24017474, 0.09779999, 0.66202527]]
@@ -93,7 +92,7 @@ class MEC_network:
         # self.q_state = [np.random.choice(5) for i in range(self.num_nodes)]
         # self.c_state = [[np.random.choice([0.2, 0.5, 1]) if j != num_nodes else COST_TO_CLOUD
         #                  for j in range(num_nodes + 1)] for i in range(num_nodes + 1)]
-        self.p_state = np.random.choice([4,4])
+        self.p_state = np.random.choice([4, 4])
         self.q_state = np.random.choice(5)
         self.task_arrival_rate = task_arrival_rate
         self.weight_q = 1
@@ -101,6 +100,7 @@ class MEC_network:
         self.weight_s = 1
         self.Q_SIZE = Q_SIZE
         self.p_a = 0
+
     # def shipDelay(self, phi):
     #
     #     cost_state = self.c_state
@@ -393,7 +393,7 @@ class MEC_network:
         #     if l1 == self.num_nodes:
         #         continue
         #     self.c_state[l1][self.num_nodes] = COST_TO_CLOUD
-        #print(self.c_state[0])
+        # print(self.c_state[0])
 
         # for node in range(self.num_nodes):
         #     self.p_state[node] = np.random.choice([1, 4], p=pT[node][self.p_state[node] - 1])
@@ -410,15 +410,15 @@ class MEC_network:
 
     def step(self, shared_action):
         task_arrival_rate = self.task_arrival_rate
-        new_task = np.random.poisson(task_arrival_rate)     # poisson distribution
+        new_task = np.random.poisson(task_arrival_rate)  # poisson distribution
 
         # self.p_a += sum(self.p_state)
         q_delay = self.q_state if self.q_state < self.Q_SIZE else self.Q_SIZE
 
         local_jobs = 0
-        for k,v in shared_action.items():
+        for k, v in shared_action.items():
             local_jobs += v[self.node_num]
-        #print("local", local_jobs)
+        # print("local", local_jobs)
         self.q_state = local_jobs - self.p_state + new_task
         self.q_state = self.q_state if self.q_state > 0 else 0
         d_delay = self.q_state - self.Q_SIZE if self.q_state > self.Q_SIZE else 0
@@ -439,13 +439,6 @@ class MEC_network:
         #     print(shared_action)
         #     exit()
 
-
-        avg_delay = (1/(self.Q_SIZE-self.q_state)) if self.Q_SIZE-self.q_state !=0 else 15
+        avg_delay = (1 / (self.Q_SIZE - self.q_state)) if self.Q_SIZE - self.q_state != 0 else 15
 
         return s_, total_work_, reward, d_delay, q_delay, new_task, avg_delay
-
-
-
-
-
-
