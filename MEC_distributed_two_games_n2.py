@@ -340,8 +340,8 @@ def run(tr):
         s_0 = np.hstack((s_0[:len(s_0) - 1], c_0))  # the other edge's price
         s_1 = np.hstack((s_1[:len(s_0) - 1], c_1))
 
-        a0_pre = shared_ations[1]
-        a1_pre = shared_ations[0]
+        a0_pre = shared_ations[0]
+        a1_pre = shared_ations[1]
 
         a0 = edge_0.local_actor.choose_action(s_0, total_work_0)
         a1 = edge_1.local_actor.choose_action(s_1, total_work_1)
