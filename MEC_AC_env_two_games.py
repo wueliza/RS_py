@@ -402,7 +402,7 @@ class MEC_network:
         # c_s = np.hstack((self.c_state[:self.num_nodes]))
         # return observation (states)
         s = np.hstack((self.p_state, self.q_state))
-        total_work = (self.q_state)
+        total_work = self.q_state
         # print("p", self.p_state)
         # print("q", self.q_state)
         # print("c", self.c_state)
