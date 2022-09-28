@@ -42,9 +42,9 @@ class Actor(object):
         self.lr = lr
         self.t = 1
         self.n_nodes = n_nodes
-        self.n_actions = 3
+        self.n_actions = 4
         self.n_features = 3  # pStates, qStates, and cStates
-        self.s = tf.placeholder(tf.float32, [1, self.n_features], "state")  # Try different dimensions
+        self.s = tf.placeholder(tf.float32, [1, self.n_features+1], "state")  # Try different dimensions
         self.epsilon = 0.9
         self.a = tf.placeholder(tf.int32, None, "act")
         self.td_error = tf.placeholder(tf.float32, None, "td_error")  # TD_error
@@ -216,7 +216,7 @@ class Predictor(object):
 
             self.v = tf.layers.dense(
                 inputs=l1,
-                units=1,  # output units
+                units=2,  # output units
                 activation=None,
                 kernel_initializer=tf.random_normal_initializer(0., .1),  # weights
                 bias_initializer=tf.constant_initializer(0.1),  # biases
@@ -238,7 +238,7 @@ class Predictor(object):
         s = s[np.newaxis, :]
 
         v = self.sess.run(self.v, {self.s: s})
-        return v
+        return v.ravel()
 
     def learn(self, s, r, r_):
         r, r_ = np.array(r).reshape(1, 1), np.array(r_).reshape(1, 1)
@@ -326,9 +326,9 @@ def run(tr):
     #          sum(s_2[N_mec_edge:(N_mec_edge + N_mec_edge)]) + sum(s_3[N_mec_edge:(N_mec_edge + N_mec_edge)]) + \
     #          sum(s_4[N_mec_edge:(N_mec_edge + N_mec_edge)]) + sum(s_5[N_mec_edge:(N_mec_edge + N_mec_edge)])
 
-    c_0 = 1
-    c_1 = 1
-    c_2 = 1
+    c_0 = [1, 1]
+    c_1 = [1, 1]
+    c_2 = [1, 1]
     shared_ations[0] = [s_0[1], 0, 0, 0]
     shared_ations[1] = [0, s_1[1], 0, 0]
     shared_ations[2] = [0, 0, s_2[1], 0]
@@ -352,11 +352,11 @@ def run(tr):
         s_1 = np.hstack((s_1[:len(s_1) - 1], c_1))
         s_2 = np.hstack((s_2[:len(s_2) - 1], c_2))
 
-        a0_pre = shared_ations[0]
-        a1_pre = shared_ations[1]
-        a2_pre = shared_ations[2]
+        a0_pre = np.hstack((shared_ations[1], shared_ations[2]))    # the other edge's price
+        a1_pre = np.hstack((shared_ations[0], shared_ations[2]))
+        a2_pre = np.hstack((shared_ations[0], shared_ations[1]))
 
-        a0 = edge_0.local_actor.choose_action(s_0, total_work_0)
+        a0 = edge_0.local_actor.choose_action(s_0, total_work_0)    # error (
         a1 = edge_1.local_actor.choose_action(s_1, total_work_1)
         a2 = edge_2.local_actor.choose_action(s_2, total_work_2)
 
@@ -406,7 +406,7 @@ def run(tr):
         edge_1.local_actor.learn(s_1, shared_ations[1], td_error_1)
         edge_2.local_actor.learn(s_2, shared_ations[2], td_error_2)
 
-        edge_0.local_predictor.learn(a0_pre, c_0_, c_0) # error
+        edge_0.local_predictor.learn(a0_pre, c_0_, c_0)
         edge_1.local_predictor.learn(a1_pre, c_1_, c_1)
         edge_2.local_predictor.learn(a2_pre, c_2_, c_2)
 
