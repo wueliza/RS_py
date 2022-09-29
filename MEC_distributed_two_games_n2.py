@@ -44,7 +44,7 @@ class Actor(object):
         self.n_nodes = n_nodes
         self.n_actions = 4
         self.n_features = 3  # pStates, qStates, and cStates
-        self.s = tf.placeholder(tf.float32, [1, self.n_features+1], "state")  # Try different dimensions
+        self.s = tf.placeholder(tf.float32, [1, self.n_features+2], "state")  # Try different dimensions
         self.epsilon = 0.9
         self.a = tf.placeholder(tf.int32, None, "act")
         self.td_error = tf.placeholder(tf.float32, None, "td_error")  # TD_error
@@ -94,7 +94,7 @@ class Actor(object):
 
     def choose_action(self, s, total_tasks):
         prob_weights = self.sess.run(self.acts_prob, feed_dict={self.s: s[np.newaxis, :]})
-        # print(prob_weights)
+        print(prob_weights)
         # action = np.random.choice(range(prob_weights.shape[1]), p=prob_weights.ravel())  # select action w.r.t the actions prob
         action = np.zeros(self.n_actions)
         # print("fuck2")
@@ -132,7 +132,7 @@ class Critic(object):
         self.lr = lr
         self.t = 1
         n_features = 3
-        self.s = tf.placeholder(tf.float32, [1, n_features], "state")
+        self.s = tf.placeholder(tf.float32, [1, n_features+2], "state")
         self.v_ = tf.placeholder(tf.float32, [1, 1], "v_next")
         self.r = tf.placeholder(tf.float32, None, 'r')
 
@@ -238,7 +238,8 @@ class Predictor(object):
         s = s[np.newaxis, :]
 
         v = self.sess.run(self.v, {self.s: s})
-        return v.ravel()
+        print(v.ravel())
+        return v
 
     def learn(self, s, r, r_):
         r, r_ = np.array(r).reshape(1, 1), np.array(r_).reshape(1, 1)
@@ -344,9 +345,9 @@ def run(tr):
         total_work_1 = s_1[1]
         total_work_2 = s_2[1]
 
-        c_0 = edge_0.local_predictor.choose_action(np.hstack((shared_ations[1], shared_ations[2]))).flatten()[0]  # predict the other edge's price
-        c_1 = edge_1.local_predictor.choose_action(np.hstack((shared_ations[0], shared_ations[2]))).flatten()[0]
-        c_2 = edge_2.local_predictor.choose_action(np.hstack((shared_ations[0], shared_ations[1]))).flatten()[0]
+        c_0 = edge_0.local_predictor.choose_action(np.hstack((shared_ations[1], shared_ations[2]))).flatten()  # predict the other edge's price
+        c_1 = edge_1.local_predictor.choose_action(np.hstack((shared_ations[0], shared_ations[2]))).flatten()
+        c_2 = edge_2.local_predictor.choose_action(np.hstack((shared_ations[0], shared_ations[1]))).flatten()
 
         s_0 = np.hstack((s_0[:len(s_0) - 1], c_0))  # the other edge's price
         s_1 = np.hstack((s_1[:len(s_1) - 1], c_1))
@@ -356,7 +357,7 @@ def run(tr):
         a1_pre = np.hstack((shared_ations[0], shared_ations[2]))
         a2_pre = np.hstack((shared_ations[0], shared_ations[1]))
 
-        a0 = edge_0.local_actor.choose_action(s_0, total_work_0)    # error (
+        a0 = edge_0.local_actor.choose_action(s_0, total_work_0)
         a1 = edge_1.local_actor.choose_action(s_1, total_work_1)
         a2 = edge_2.local_actor.choose_action(s_2, total_work_2)
 
@@ -398,7 +399,7 @@ def run(tr):
 
         q_len += new_task_0 + new_task_1 + new_task_2   # +sum(new_task_1) +sum(new_task_2)+sum(new_task_3)+sum(new_task_4)+sum(new_task_5)
 
-        td_error_0, v_0, _, v_0_ = edge_0.local_critic.learn(s_0, r_0, s_0_)
+        td_error_0, v_0, _, v_0_ = edge_0.local_critic.learn(s_0, r_0, s_0_)    # error
         td_error_1, v_1, _, v_1_ = edge_1.local_critic.learn(s_1, r_1, s_1_)
         td_error_2, v_2, _, v_2_ = edge_1.local_critic.learn(s_2, r_2, s_2_)
 
